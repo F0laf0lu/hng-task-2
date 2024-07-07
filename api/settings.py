@@ -79,23 +79,23 @@ WSGI_APPLICATION = 'api.wsgi.app'
 # Note: Django modules for using databases are not support in serverless
 # environments like Vercel. You can use a database over HTTP, hosted elsewhere.
 
-# postgres://tzbnwvbp:vSwRMTralynB05bqmArOuMnirxu8Xq6j@flora.db.elephantsql.com/tzbnwvbp
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": "tzbnwvbp",
-#         "USER": "tzbnwvbp",
-#         "PASSWORD": "vSwRMTralynB05bqmArOuMnirxu8Xq6j",
-#         "HOST": "flora.db.elephantsql.com",
-#     }
-# }
 
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+    "default": {
+        "ENGINE": "django.db.backends.postgresql",
+        "NAME": "tzbnwvbp",
+        "USER": "tzbnwvbp",
+        "PASSWORD": "vSwRMTralynB05bqmArOuMnirxu8Xq6j",
+        "HOST": "flora.db.elephantsql.com",
     }
 }
+
+# DATABASES = {
+#     'default': {
+#         'ENGINE': 'django.db.backends.sqlite3',
+#         'NAME': BASE_DIR / 'db.sqlite3',
+#     }
+# }
 
 
 # Password validation
@@ -151,7 +151,4 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': [
         'rest_framework_simplejwt.authentication.JWTAuthentication',
     ],
-    # 'DEFAULT_PERMISSION_CLASSES': [
-    #     'rest_framework.permissions.IsAuthenticated',
-    # ],
 }
