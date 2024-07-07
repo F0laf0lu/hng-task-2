@@ -86,17 +86,6 @@ WSGI_APPLICATION = 'api.wsgi.app'
 # Note: Django modules for using databases are not support in serverless
 # environments like Vercel. You can use a database over HTTP, hosted elsewhere.
 
-
-# DATABASES = {
-#     "default": {
-#         "ENGINE": "django.db.backends.postgresql",
-#         "NAME": "tzbnwvbp",
-#         "USER": "tzbnwvbp",
-#         "PASSWORD": "vSwRMTralynB05bqmArOuMnirxu8Xq6j",
-#         "HOST": "flora.db.elephantsql.com",
-#     }
-# }
-
 DATABASES = {
     "default": {
         "ENGINE": "django.db.backends.postgresql",
@@ -106,8 +95,6 @@ DATABASES = {
         "HOST": os.getenv('DB_HOST'),
     }
 }
-
-
 
 
 # DATABASES = {
