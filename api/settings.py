@@ -18,6 +18,8 @@ from dotenv import load_dotenv
 
 load_dotenv()
 
+DEBUG = os.getenv('DEBUG', 'False').lower() in ('true', '1', 't')
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -29,7 +31,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.getenv('SECRET_KEY')
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = os.getenv('DEBUG')
+DEBUG = DEBUG if isinstance(DEBUG, bool) else False 
 
 ALLOWED_HOSTS = ['127.0.0.1', '.vercel.app']
 
