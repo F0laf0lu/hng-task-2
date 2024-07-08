@@ -4,10 +4,8 @@ from rest_framework import status, serializers, permissions
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, ListCreateAPIView
-
-from user.permissions import BelongsToOrg
 from .serializers import CustomTokenObtainPairSerializer, RegisterSerializer, OrganizationSerializer, UserSerializer
-from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework_simplejw    t.tokens import RefreshToken
 from .models import Organisation, User
 
 # Create your views here.
@@ -15,55 +13,29 @@ from .models import Organisation, User
 class RegisterView(CreateAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = RegisterSerializer
+
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        try:
-            serializer.is_valid(raise_exception=True)
-        except serializers.ValidationError as e:
-            required_fields = ["firstName", "lastName", "email", "password", "phone"]
-            missing_fields = [field for field in required_fields if not serializer.data.get(field)]
-            error_detail = []
-            for field in missing_fields:
-                error_detail.append({
-                    "field":field,
-                    "message":"This field cannot be blank"
-                })
-            if error_detail:
-                return Response({"errors": error_detail}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-            fail_response = {
-                    "status": "Bad request",
-                    "message": "Registration unsuccessful",
-                    "statusCode": 400
-                }
-            return Response(fail_response, status=status.HTTP_400_BAD_REQUEST)
-        return super().post(request, *args, **kwargs)
-
-    def create(self, request, *args, **kwargs):
-        try:
-            serializer = self.get_serializer(data=request.data)
-            serializer.is_valid(raise_exception=True)
+        if serializer.is_valid():
             user = serializer.save()
-
-            token_serializer = CustomTokenObtainPairSerializer()
-            tokens = token_serializer.get_token(user)
-        except Exception as e:
-            print(e)
-            fail_response = {
-                    "status": "Bad request",
-                    "message": "Registration unsuccessful",
-                    "statusCode": 400
-                }
-            return Response(fail_response, status=status.HTTP_400_BAD_REQUEST)
-        headers = self.get_success_headers(serializer.data)
-        success_response = {
-            "status": "success",
-            "message": "Registration successful",
-            "data": {
-                    "accessToken": str(tokens.access_token),
+            refresh = RefreshToken.for_user(user)
+            success_response = {
+                "status": "success",
+                "message": "Registration successful",
+                "data": {
+                    "accessToken": str(refresh.access_token),
                     "user": UserSerializer(user).data
                 }
             }
-        return Response(success_response, status=status.HTTP_201_CREATED, headers=headers)
+            return Response(success_response, status=status.HTTP_201_CREATED)
+        
+        required_fields = ["firstName", "lastName", "email", "password"]
+        missing_fields = [field for field in required_fields if not serializer.initial_data.get(field)]
+        if missing_fields:
+            error_detail = [{"field": field, "message": "This field cannot be blank"} for field in missing_fields]
+            return Response({"errors": error_detail}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        
+        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(APIView):
