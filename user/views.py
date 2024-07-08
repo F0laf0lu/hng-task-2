@@ -5,7 +5,7 @@ from rest_framework.views import APIView
 from django.contrib.auth import authenticate
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, ListCreateAPIView
 from .serializers import CustomTokenObtainPairSerializer, RegisterSerializer, OrganizationSerializer, UserSerializer
-from rest_framework_simplejw    t.tokens import RefreshToken
+from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Organisation, User
 
 # Create your views here.
