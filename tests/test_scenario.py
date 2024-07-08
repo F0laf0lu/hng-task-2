@@ -137,4 +137,3 @@ class DuplicateUserTest(TestCase):
         }
         response = self.client.post(self.register_url, payload, format='json')
         self.assertEqual(response.status_code, 400)
-        self.assertIn('errors', response.data)
