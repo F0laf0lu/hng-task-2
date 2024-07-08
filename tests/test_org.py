@@ -12,14 +12,14 @@ class OrganisationAccessTest(TestCase):
         self.client = APIClient()
         self.user1 = User.objects.create_user(
             email='user1@example.com',
-            first_name='User1',
-            last_name='Test',
+            firstName='User1',
+            lastName='Test',
             password='password123'
         )
         self.user2 = User.objects.create_user(
             email='user2@example.com',
-            first_name='User2',
-            last_name='Test',
+            firstName='User2',
+            lastName='Test',
             password='password123'
         )
         self.org1 = Organisation.objects.create(name="User1's Organisation")
@@ -27,11 +27,11 @@ class OrganisationAccessTest(TestCase):
 
     def test_organisation_access_forbidden(self):
         # self.client.force_authenticate(user=self.user2)
-        response = self.client.get(reverse('organisation_detail', kwargs={'org_id': self.org1.org_id}))
+        response = self.client.get(reverse('organisation_detail', kwargs={'orgId': self.org1.orgId}))
         self.assertEqual(response.status_code, 401)
 
     def test_organisation_access_allowed(self):
         self.client.force_authenticate(user=self.user1)
-        response = self.client.get(reverse('organisation_detail', kwargs={'org_id': self.org1.org_id}))
+        response = self.client.get(reverse('organisation_detail', kwargs={'orgId': self.org1.orgId}))
         self.assertEqual(response.status_code, 200)
         self.assertEqual(response.data['data']['name'], "User1's Organisation")

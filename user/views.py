@@ -18,7 +18,7 @@ class RegisterView(CreateAPIView):
         try:
             serializer.is_valid(raise_exception=True)
         except serializers.ValidationError as e:
-            required_fields = ["first_name", "last_name", "email", "password", "phone"]
+            required_fields = ["firstName", "lastName", "email", "password", "phone"]
             missing_fields = [field for field in required_fields if not serializer.data.get(field)]
             error_detail = []
             for field in missing_fields:
@@ -28,7 +28,7 @@ class RegisterView(CreateAPIView):
                 })
             if error_detail:
                 return Response({"errors": error_detail}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-            return Response({"errors": e.detail}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+            return Response({"errors": e.detail}, status=status.HTTP_400_BAD_REQUEST)
         return super().post(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
@@ -133,7 +133,7 @@ class OrganizationDetailView(RetrieveAPIView):
     permission_classes = [permissions.IsAuthenticated]
     queryset = Organisation.objects.all()
     serializer_class = OrganizationSerializer
-    lookup_field = "org_id"
+    lookup_field = "orgId"
 
     def retrieve(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -166,8 +166,8 @@ class UserDetailView(APIView):
                 "message": "User details retrieved successfully",
                 "data": {
                     "userId": str(user_instance.id),
-                    "firstName": user_instance.first_name,
-                    "lastName": user_instance.last_name,
+                    "firstName": user_instance.firstName,
+                    "lastName": user_instance.lastName,
                     "email": user_instance.email,
                     "phone": user_instance.phone
                 }
@@ -192,8 +192,8 @@ class UserDetailView(APIView):
 
 
 class AddUserToOrganisationView(APIView):
-    def post(self, request, org_id):
-        org = get_object_or_404(Organisation, org_id=org_id)
+    def post(self, request, orgId):
+        org = get_object_or_404(Organisation, orgId=orgId)
         user_id = request.data.get('userId')
         user = get_object_or_404(User, userId=user_id)
         print(user)

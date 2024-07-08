@@ -8,13 +8,13 @@ from . managers import CustomUserManager
 class User(AbstractUser):
     username = None
     userId = models.CharField(max_length=255, unique=True, editable=False)
-    first_name = models.CharField(max_length=150, null=False)
-    last_name = models.CharField(max_length=150, null=False)
+    firstName = models.CharField(max_length=150, null=False)
+    lastName = models.CharField(max_length=150, null=False)
     email = models.EmailField(unique=True, null=False)
     phone = models.CharField(max_length=15)
     
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = ["first_name", "last_name"]
+    REQUIRED_FIELDS = ["firstName", "lastName"]
 
     objects = CustomUserManager()
 
@@ -32,7 +32,7 @@ class User(AbstractUser):
     
 
 class Organisation(models.Model):
-    org_id = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
+    orgId = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     name = models.CharField(max_length=100)
     description = models.TextField(blank=True, null=True)
     users = models.ManyToManyField(User, related_name='organisations')

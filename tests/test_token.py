@@ -12,8 +12,8 @@ class TokenGenerationTest(TestCase):
     def setUp(self):
         self.user = User.objects.create_user(
             email='testuser@example.com',
-            first_name='Test',
-            last_name='User',
+            firstName='Test',
+            lastName='User',
             password='password123'
         )
         self.token = CustomTokenObtainPairSerializer.get_token(self.user)

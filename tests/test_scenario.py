@@ -13,8 +13,8 @@ class UserRegistrationTest(TestCase):
 
     def test_successful_registration_with_default_organisation(self):
         payload = {
-            'first_name': 'John',
-            'last_name': 'Doe',
+            'firstName': 'John',
+            'lastName': 'Doe',
             'email': 'johndoe@example.com',
             'password': 'password123',
             'phone': '1234567890'
@@ -39,8 +39,8 @@ class UserLoginTest(TestCase):
         self.login_url = reverse('login')
         self.user = User.objects.create_user(
             email='testuser@example.com',
-            first_name='Test',
-            last_name='User',
+            firstName='Test',
+            lastName='User',
             password='password123'
         )
 
@@ -71,9 +71,9 @@ class MissingFieldsTest(TestCase):
         self.client = APIClient()
         self.register_url = reverse('register')
 
-    def test_missing_first_name(self):
+    def test_missing_firstName(self):
         payload = {
-            'last_name': 'Doe',
+            'lastName': 'Doe',
             'email': 'janedoe@example.com',
             'password': 'password123',
             'phone': '1234567890'
@@ -82,9 +82,9 @@ class MissingFieldsTest(TestCase):
         self.assertEqual(response.status_code, 422)
         self.assertIn('errors', response.data)
 
-    def test_missing_last_name(self):
+    def test_missing_lastName(self):
         payload = {
-            'first_name': 'Jane',
+            'firstName': 'Jane',
             'email': 'janedoe@example.com',
             'password': 'password123',
             'phone': '1234567890'
@@ -95,8 +95,8 @@ class MissingFieldsTest(TestCase):
 
     def test_missing_email(self):
         payload = {
-            'first_name': 'Jane',
-            'last_name': 'Doe',
+            'firstName': 'Jane',
+            'lastName': 'Doe',
             'password': 'password123',
             'phone': '1234567890'
         }
@@ -106,8 +106,8 @@ class MissingFieldsTest(TestCase):
 
     def test_missing_password(self):
         payload = {
-            'first_name': 'Jane',
-            'last_name': 'Doe',
+            'firstName': 'Jane',
+            'lastName': 'Doe',
             'email': 'janedoe@example.com',
             'phone': '1234567890'
         }
@@ -122,19 +122,19 @@ class DuplicateUserTest(TestCase):
         self.register_url = reverse('register')
         User.objects.create_user(
             email='existinguser@example.com',
-            first_name='Existing',
-            last_name='User',
+            firstName='Existing',
+            lastName='User',
             password='password123'
         )
 
     def test_duplicate_email(self):
         payload = {
-            'first_name': 'New',
-            'last_name': 'User',
+            'firstName': 'New',
+            'lastName': 'User',
             'email': 'existinguser@example.com',
             'password': 'password123',
             'phone': '1234567890'
         }
         response = self.client.post(self.register_url, payload, format='json')
-        self.assertEqual(response.status_code, 422)
+        self.assertEqual(response.status_code, 400)
         self.assertIn('errors', response.data)

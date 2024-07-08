@@ -7,25 +7,25 @@ from rest_framework_simplejwt.serializers import TokenObtainPairSerializer
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["userId", "first_name", "last_name", "email", "phone"]
+        fields = ["userId", "firstName", "lastName", "email", "phone"]
     
 class RegisterSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ["first_name", "last_name", "email", "password", "phone"]
+        fields = ["firstName", "lastName", "email", "password", "phone"]
 
 
     def create(self, validated_data):
         user = User.objects.create_user(**validated_data)
         users_org = Organisation.objects.create(
-            name=f"{validated_data['first_name']}'s Organization")
+            name=f"{validated_data['firstName']}'s Organization")
         users_org.users.add(user)
         return user
 
 class OrganizationSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organisation
-        fields = ["org_id", "name", "description"]
+        fields = ["orgId", "name", "description"]
 
 
 class CustomTokenObtainPairSerializer(TokenObtainPairSerializer):
