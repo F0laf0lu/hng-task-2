@@ -4,6 +4,8 @@ from rest_framework import status, serializers, permissions
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, ListCreateAPIView
+
+from user.permissions import BelongsToOrg
 from .serializers import CustomTokenObtainPairSerializer, RegisterSerializer, OrganizationSerializer, UserSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Organisation, User
@@ -28,7 +30,12 @@ class RegisterView(CreateAPIView):
                 })
             if error_detail:
                 return Response({"errors": error_detail}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-            return Response({"errors": e.detail}, status=status.HTTP_400_BAD_REQUEST)
+            fail_response = {
+                    "status": "Bad request",
+                    "message": "Registration unsuccessful",
+                    "statusCode": 400
+                }
+            return Response(fail_response, status=status.HTTP_400_BAD_REQUEST)
         return super().post(request, *args, **kwargs)
 
     def create(self, request, *args, **kwargs):
@@ -39,8 +46,6 @@ class RegisterView(CreateAPIView):
 
             token_serializer = CustomTokenObtainPairSerializer()
             tokens = token_serializer.get_token(user)
-
-            # refresh = RefreshToken.for_user(user)
         except Exception as e:
             print(e)
             fail_response = {
@@ -112,8 +117,11 @@ class OrganizationListview(ListCreateAPIView):
     def post(self, request):
         data = request.data
         if not data.get('name'):
-            return Response({"errors": [{"field": "name", "message": "This field is required"}]}, status=422)
-        
+            return Response({
+                "status": "Bad Request",
+                "message": "Client error",
+                "statusCode": 400
+            }, status=status.HTTP_400_BAD_REQUEST)
         try:
             org = Organisation.objects.create(name=data['name'], description=data.get('description'))
             org.users.add(request.user)
@@ -192,11 +200,17 @@ class UserDetailView(APIView):
 
 
 class AddUserToOrganisationView(APIView):
+    permission_classes = [permissions.IsAuthenticated]
     def post(self, request, orgId):
         org = get_object_or_404(Organisation, orgId=orgId)
+        
+        if request.user not in org.users.all():
+            return Response({
+                "status": "error",
+                "message": "You do not have permission to add users to this organisation."
+            }, status=status.HTTP_403_FORBIDDEN)
         user_id = request.data.get('userId')
         user = get_object_or_404(User, userId=user_id)
-        print(user)
         org.users.add(user)
         return Response({
             "status": "success",

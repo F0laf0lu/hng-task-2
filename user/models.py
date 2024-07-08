@@ -33,7 +33,7 @@ class User(AbstractUser):
 
 class Organisation(models.Model):
     orgId = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
-    name = models.CharField(max_length=100)
+    name = models.CharField(max_length=100, null=False)
     description = models.TextField(blank=True, null=True)
     users = models.ManyToManyField(User, related_name='organisations')
 
