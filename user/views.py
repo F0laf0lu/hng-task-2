@@ -3,19 +3,18 @@ from rest_framework.response import Response
 from rest_framework import status, serializers, permissions
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate
-from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, ListCreateAPIView, GenericAPIView
+from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, ListCreateAPIView
 from rest_framework.exceptions import ValidationError
 from .serializers import CustomTokenObtainPairSerializer, RegisterSerializer, OrganizationSerializer, UserSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Organisation, User
 
 # Create your views here.
-class RegisterView(GenericAPIView):
+class RegisterView(APIView):
     permission_classes = [permissions.AllowAny]
-    serializer_class = RegisterSerializer
 
     def post(self, request, *args, **kwargs):
-        serializer = self.get_serializer(data=request.data)
+        serializer = RegisterSerializer(data=request.data)
         try:
             serializer.is_valid(raise_exception=True)
             user = serializer.save()
