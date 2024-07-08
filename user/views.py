@@ -30,7 +30,7 @@ class RegisterView(CreateAPIView):
             return Response(success_response, status=status.HTTP_201_CREATED)
         
         required_fields = ["firstName", "lastName", "email", "password"]
-        missing_fields = [field for field in required_fields if not serializer.initial_data.get(field)]
+        missing_fields = [field for field in required_fields if not request.data.get(field)]
         if missing_fields:
             error_detail = [{"field": field, "message": "This field cannot be blank"} for field in missing_fields]
             return Response({"errors": error_detail}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
