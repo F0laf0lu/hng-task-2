@@ -4,19 +4,20 @@ from rest_framework import status, serializers, permissions
 from rest_framework.views import APIView
 from django.contrib.auth import authenticate
 from rest_framework.generics import CreateAPIView, ListAPIView, RetrieveAPIView, ListCreateAPIView
+from rest_framework.exceptions import ValidationError
 from .serializers import CustomTokenObtainPairSerializer, RegisterSerializer, OrganizationSerializer, UserSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from .models import Organisation, User
 
 # Create your views here.
-
 class RegisterView(CreateAPIView):
     permission_classes = [permissions.AllowAny]
     serializer_class = RegisterSerializer
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        if serializer.is_valid():
+        try:
+            serializer.is_valid(raise_exception=True)
             user = serializer.save()
             refresh = RefreshToken.for_user(user)
             success_response = {
@@ -28,14 +29,17 @@ class RegisterView(CreateAPIView):
                 }
             }
             return Response(success_response, status=status.HTTP_201_CREATED)
-        
-        required_fields = ["firstName", "lastName", "email", "password"]
-        missing_fields = [field for field in required_fields if not request.data.get(field)]
-        if missing_fields:
-            error_detail = [{"field": field, "message": "This field cannot be blank"} for field in missing_fields]
-            return Response({"errors": error_detail}, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
-        
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        except ValidationError as e:
+            # Handling the custom 422 error raised by the serializer
+            return Response(e.detail, status=status.HTTP_422_UNPROCESSABLE_ENTITY)
+        except Exception as e:
+            # Handling other potential errors
+            fail_response = {
+                "status": "Bad request",
+                "message": "Registration unsuccessful",
+                "statusCode": 400
+            }
+            return Response(fail_response, status=status.HTTP_400_BAD_REQUEST)
 
 
 class LoginView(APIView):
